@@ -56,8 +56,8 @@ function Layout() {
         <Outlet />
       ) : (
         <div className="p-6 text-center">
-          <h2 className="mt-10 text-2xl font-extrabold">Esperando aprobación</h2>
-          <p className="mt-2 text-muted-foreground">Pídele al administrador que apruebe tu usuario y vuelve a entrar.</p>
+          <h2 className="mt-10 text-2xl font-extrabold">Sin acceso</h2>
+          <p className="mt-2 text-muted-foreground">Tu usuario no tiene acceso. Habla con el administrador.</p>
         </div>
       )}
       {isStaff && (

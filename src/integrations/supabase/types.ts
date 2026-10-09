@@ -127,18 +127,24 @@ export type Database = {
       }
       profiles: {
         Row: {
+          activo: boolean
           created_at: string
           id: string
+          nombre: string
           usuario: string
         }
         Insert: {
+          activo?: boolean
           created_at?: string
           id: string
+          nombre?: string
           usuario: string
         }
         Update: {
+          activo?: boolean
           created_at?: string
           id?: string
+          nombre?: string
           usuario?: string
         }
         Relationships: []
@@ -258,10 +264,6 @@ export type Database = {
       registrar_venta: {
         Args: { _items: Json; _metodo: string; _recibido: number }
         Returns: string
-      }
-      set_staff: {
-        Args: { _aprobado: boolean; _user_id: string }
-        Returns: undefined
       }
     }
     Enums: {
