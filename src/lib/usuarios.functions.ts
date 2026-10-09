@@ -2,9 +2,9 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-const usuarioRe = /^[a-z0-9._-]{3,30}$/;
+const usuarioRe = /^([a-z0-9._-]{3,30}|[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})$/;
 const pinSchema = z.string().regex(/^\d{6}$/, "El PIN debe tener 6 dígitos");
-const emailDe = (u: string) => `${u}@estadero.local`;
+const emailDe = (u: string) => (u.includes("@") ? u : `${u}@estadero.local`);
 
 // The real auth password is an HMAC of the PIN with a server-only pepper, so a
 // 6-digit PIN can't be brute-forced against the auth API directly.

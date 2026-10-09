@@ -36,7 +36,7 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!/^[a-zA-Z0-9._-]{3,}$/.test(usuario.trim())) { toast.error("Usuario: mínimo 3 letras o números"); return; }
+    if (!/^[a-zA-Z0-9._%+@-]{3,}$/.test(usuario.trim())) { toast.error("Usuario: mínimo 3 letras o números"); return; }
     if (!/^\d{6}$/.test(pin)) { toast.error("El PIN debe tener 6 dígitos"); return; }
     setBusy(true);
     try {
