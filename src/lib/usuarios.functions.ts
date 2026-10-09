@@ -26,6 +26,7 @@ async function crear(nombre: string, usuario: string, pin: string, rol: "admin" 
   });
   if (error || !data.user) {
     const msg = error?.message ?? "";
+    console.error("createUser error:", msg);
     if (/already|registered|exists/i.test(msg)) throw new Error("Ese usuario ya existe");
     if (/pwned|leak|weak/i.test(msg)) throw new Error("PIN demasiado común, elige otro");
     throw new Error("No se pudo crear el usuario");
