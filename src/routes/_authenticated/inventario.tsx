@@ -24,7 +24,7 @@ function Inventario() {
         {isAdmin && <button onClick={() => setEdit({ marca_color: "neutral", unidades_por_canasta: 30, activo: true })}
           className="flex h-11 items-center gap-1 rounded-full bg-primary px-4 font-bold text-primary-foreground">
           <Plus className="h-5 w-5" /> Nuevo
-        </button>
+        </button>}
       </div>
       <ul className="space-y-2">
         {productos.map((p) => {
