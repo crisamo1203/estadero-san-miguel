@@ -99,7 +99,7 @@ export const editarUsuario = createServerFn({ method: "POST" })
     if (propio && (!data.activo || data.rol !== "admin")) throw new Error("No puedes quitarte el acceso de administrador");
     const sb = await admin();
     const attrs: Record<string, unknown> = { ban_duration: data.activo ? "none" : "876000h" };
-    if (data.pin) attrs.password = data.pin;
+    if (data.pin) attrs['password'] = data.pin;
     const { error } = await sb.auth.admin.updateUserById(data.id, attrs);
     if (error) {
       if (/pwned|leak|weak/i.test(error.message)) throw new Error("PIN demasiado común, elige otro");
