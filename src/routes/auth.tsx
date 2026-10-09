@@ -3,8 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { usuarioAEmail } from "@/lib/estadero";
-import { crearPrimerAdmin, hayAdmin } from "@/lib/usuarios.functions";
+import { crearPrimerAdmin, hayAdmin, ingresar } from "@/lib/usuarios.functions";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -24,6 +23,7 @@ function AuthPage() {
   const nav = useNavigate();
   const checkAdmin = useServerFn(hayAdmin);
   const primerAdmin = useServerFn(crearPrimerAdmin);
+  const login = useServerFn(ingresar);
   const [setup, setSetup] = useState(false);
   const [nombre, setNombre] = useState("");
   const [usuario, setUsuario] = useState("");
@@ -44,8 +44,9 @@ function AuthPage() {
         if (!nombre.trim()) { toast.error("Escribe tu nombre"); return; }
         await primerAdmin({ data: { nombre, usuario: usuario.trim().toLowerCase(), pin } });
       }
-      const { error } = await supabase.auth.signInWithPassword({ email: usuarioAEmail(usuario), password: pin });
-      if (error) { toast.error("Usuario o PIN incorrecto, o usuario inactivo"); return; }
+      const tokens = await login({ data: { usuario: usuario.trim().toLowerCase(), pin } });
+      const { error } = await supabase.auth.setSession(tokens);
+      if (error) { toast.error("No se pudo iniciar sesión"); return; }
       nav({ to: "/pos", replace: true });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Error");

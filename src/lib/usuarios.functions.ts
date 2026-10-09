@@ -6,6 +6,16 @@ const usuarioRe = /^[a-z0-9._-]{3,30}$/;
 const pinSchema = z.string().regex(/^\d{6}$/, "El PIN debe tener 6 dígitos");
 const emailDe = (u: string) => `${u}@estadero.local`;
 
+// The real auth password is an HMAC of the PIN with a server-only pepper, so a
+// 6-digit PIN can't be brute-forced against the auth API directly.
+async function derivar(pin: string) {
+  const pepper = process.env["PIN_PEPPER"];
+  if (!pepper) throw new Error("Falta configuración del servidor");
+  const key = await crypto.subtle.importKey("raw", new TextEncoder().encode(pepper), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(pin));
+  return "p_" + Array.from(new Uint8Array(sig), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 async function admin() {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
@@ -20,13 +30,12 @@ async function crear(nombre: string, usuario: string, pin: string, rol: "admin" 
   const sb = await admin();
   const { data, error } = await sb.auth.admin.createUser({
     email: emailDe(usuario),
-    password: pin,
+    password: await derivar(pin),
     email_confirm: true,
     user_metadata: { nombre },
   });
   if (error || !data.user) {
     const msg = error?.message ?? "";
-    console.error("createUser error:", msg);
     if (/already|registered|exists/i.test(msg)) throw new Error("Ese usuario ya existe");
     if (/pwned|leak|weak/i.test(msg)) throw new Error("PIN demasiado común, elige otro");
     throw new Error("No se pudo crear el usuario");
@@ -100,7 +109,7 @@ export const editarUsuario = createServerFn({ method: "POST" })
     if (propio && (!data.activo || data.rol !== "admin")) throw new Error("No puedes quitarte el acceso de administrador");
     const sb = await admin();
     const attrs: Record<string, unknown> = { ban_duration: data.activo ? "none" : "876000h" };
-    if (data.pin) attrs['password'] = data.pin;
+    if (data.pin) attrs['password'] = await derivar(data.pin);
     const { error } = await sb.auth.admin.updateUserById(data.id, attrs);
     if (error) {
       if (/pwned|leak|weak/i.test(error.message)) throw new Error("PIN demasiado común, elige otro");
@@ -114,4 +123,27 @@ export const editarUsuario = createServerFn({ method: "POST" })
       await sb.from("user_roles").delete().eq("user_id", data.id).eq("role", "admin");
     }
     return { ok: true };
+  });
+
+export const ingresar = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) =>
+    z.object({ usuario: z.string().trim().toLowerCase().regex(usuarioRe), pin: pinSchema }).parse(d),
+  )
+  .handler(async ({ data }) => {
+    const { createClient } = await import("@supabase/supabase-js");
+    const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
+    const sb = createClient(process.env["SUPABASE_URL"]!, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: {
+        fetch: (input, init) => {
+          const h = new Headers(init?.headers);
+          if (key.startsWith("sb_") && h.get("Authorization") === `Bearer ${key}`) h.delete("Authorization");
+          h.set("apikey", key);
+          return fetch(input, { ...init, headers: h });
+        },
+      },
+    });
+    const { data: s, error } = await sb.auth.signInWithPassword({ email: emailDe(data.usuario), password: await derivar(data.pin) });
+    if (error || !s.session) throw new Error("Usuario o PIN incorrecto, o usuario inactivo");
+    return { access_token: s.session.access_token, refresh_token: s.session.refresh_token };
   });
