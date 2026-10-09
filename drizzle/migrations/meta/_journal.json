@@ -8,6 +8,13 @@
       "when": 1791579163865,
       "tag": "0000_estadero_schema",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791582115894,
+      "tag": "0001_staff_roles",
+      "breakpoints": true
     }
   ]
 }

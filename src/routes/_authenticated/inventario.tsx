@@ -15,22 +15,23 @@ export const Route = createFileRoute("/_authenticated/inventario")({
 function Inventario() {
   const { data: productos = [] } = useQuery(productosQuery);
   const [edit, setEdit] = useState<Partial<Producto> | null>(null);
+  const { isAdmin } = Route.useRouteContext();
 
   return (
     <div className="p-4">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-2xl font-extrabold">Inventario</h2>
-        <button onClick={() => setEdit({ marca_color: "neutral", unidades_por_canasta: 30, activo: true })}
+        {isAdmin && <button onClick={() => setEdit({ marca_color: "neutral", unidades_por_canasta: 30, activo: true })}
           className="flex h-11 items-center gap-1 rounded-full bg-primary px-4 font-bold text-primary-foreground">
           <Plus className="h-5 w-5" /> Nuevo
-        </button>
+        </button>}
       </div>
       <ul className="space-y-2">
         {productos.map((p) => {
           const bajo = p.stock_unidades < 30;
           return (
             <li key={p.id}>
-              <button onClick={() => setEdit(p)} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left">
+              <button onClick={() => isAdmin && setEdit(p)} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left">
                 <span className={`h-12 w-2 shrink-0 rounded-full ${brandClass[p.marca_color] ?? brandClass["neutral"]}`} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
