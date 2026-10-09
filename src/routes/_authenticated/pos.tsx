@@ -37,7 +37,7 @@ function Pos() {
       {isLoading && <p className="text-muted-foreground">Cargando...</p>}
       <div className="grid grid-cols-1 gap-3">
         {productos.filter((p) => p.activo).map((p) => (
-          <div key={p.id} className={`rounded-3xl p-4 ${brandClass[p.marca_color] ?? brandClass.neutral}`}>
+          <div key={p.id} className={`rounded-3xl p-4 ${brandClass[p.marca_color] ?? brandClass["neutral"]}`}>
             <div className="flex items-baseline justify-between gap-2">
               <h2 className="truncate text-2xl font-extrabold">{p.nombre}</h2>
               <span className="shrink-0 text-sm font-medium opacity-80">Stock {p.stock_unidades}</span>
@@ -81,7 +81,7 @@ function Pos() {
             _items: carrito.map((l) => ({ producto_id: l.producto.id, tipo: l.tipo, cantidad: l.cantidad })),
             _metodo: metodo, _recibido: recibido as number,
           });
-          if (error) return toast.error("No se pudo registrar: " + error.message);
+          if (error) { toast.error("No se pudo registrar: " + error.message); return; }
           toast.success("Venta registrada");
           setCarrito([]); setCobrando(false);
           qc.invalidateQueries();

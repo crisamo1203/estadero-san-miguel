@@ -38,7 +38,7 @@ function Cierre() {
     },
   });
   const total = Object.values(data?.porMetodo ?? {}).reduce((a, b) => a + b, 0);
-  const efectivo = data?.porMetodo.efectivo ?? 0;
+  const efectivo = data?.porMetodo["efectivo"] ?? 0;
 
   return (
     <div className="space-y-4 p-4">

@@ -25,8 +25,8 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!/^[a-zA-Z0-9._-]{3,}$/.test(usuario.trim())) return toast.error("Usuario: mínimo 3 letras o números");
-    if (!/^\d{6}$/.test(pin)) return toast.error("El PIN debe tener 6 dígitos");
+    if (!/^[a-zA-Z0-9._-]{3,}$/.test(usuario.trim())) { toast.error("Usuario: mínimo 3 letras o números"); return; }
+    if (!/^\d{6}$/.test(pin)) { toast.error("El PIN debe tener 6 dígitos"); return; }
     setBusy(true);
     const email = usuarioAEmail(usuario);
     const { error } =
@@ -34,7 +34,7 @@ function AuthPage() {
         ? await supabase.auth.signInWithPassword({ email, password: pin })
         : await supabase.auth.signUp({ email, password: pin });
     setBusy(false);
-    if (error) return toast.error(modo === "in" ? "Usuario o PIN incorrecto" : error.message);
+    if (error) { toast.error(modo === "in" ? "Usuario o PIN incorrecto" : error.message); return; }
     nav({ to: "/pos", replace: true });
   }
 

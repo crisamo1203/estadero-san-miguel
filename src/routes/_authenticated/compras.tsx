@@ -32,7 +32,7 @@ function Compras() {
 
   function agregar() {
     const n = Number(cant);
-    if (!prod || !n) return toast.error("Elige producto y cantidad");
+    if (!prod || !n) { toast.error("Elige producto y cantidad"); return; }
     setItems((x) => [...x, { producto_id: prod, tipo, cantidad: n, costo: Number(costo || 0) }]);
     setCant("1"); setCosto("");
   }
@@ -41,7 +41,7 @@ function Compras() {
     setBusy(true);
     const { error } = await supabase.rpc("registrar_compra", { _proveedor: proveedor, _items: items });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Compra registrada, stock actualizado");
     setItems([]);
     qc.invalidateQueries();

@@ -31,7 +31,7 @@ function Inventario() {
           return (
             <li key={p.id}>
               <button onClick={() => setEdit(p)} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left">
-                <span className={`h-12 w-2 shrink-0 rounded-full ${brandClass[p.marca_color] ?? brandClass.neutral}`} />
+                <span className={`h-12 w-2 shrink-0 rounded-full ${brandClass[p.marca_color] ?? brandClass["neutral"]}`} />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="truncate font-bold">{p.nombre}</span>
@@ -62,14 +62,14 @@ function Editor({ p, onClose }: { p: Partial<Producto>; onClose: () => void }) {
       className="h-12 w-full rounded-xl border border-input bg-background px-3 text-lg" />
   );
   async function guardar() {
-    if (!f.nombre?.trim()) return toast.error("Falta el nombre");
+    if (!f.nombre?.trim()) { toast.error("Falta el nombre"); return; }
     const row = {
       nombre: f.nombre.trim(), marca_color: f.marca_color ?? "neutral",
       precio_unidad: f.precio_unidad ?? 0, precio_canasta: f.precio_canasta ?? 0, costo_unidad: f.costo_unidad ?? 0,
       unidades_por_canasta: f.unidades_por_canasta || 30, stock_unidades: f.stock_unidades ?? 0, activo: f.activo ?? true,
     };
     const { error } = f.id ? await supabase.from("productos").update(row).eq("id", f.id) : await supabase.from("productos").insert(row);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Guardado");
     qc.invalidateQueries({ queryKey: ["productos"] });
     onClose();
