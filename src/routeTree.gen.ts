@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedCierreRouteImport } from './routes/_authenticated/cierre'
 import { Route as AuthenticatedComprasRouteImport } from './routes/_authenticated/compras'
 import { Route as AuthenticatedInventarioRouteImport } from './routes/_authenticated/inventario'
+import { Route as AuthenticatedPersonalRouteImport } from './routes/_authenticated/personal'
 import { Route as AuthenticatedPosRouteImport } from './routes/_authenticated/pos'
 
 const IndexRoute = IndexRouteImport.update({
@@ -46,6 +47,11 @@ const AuthenticatedInventarioRoute = AuthenticatedInventarioRouteImport.update({
   path: '/inventario',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPersonalRoute = AuthenticatedPersonalRouteImport.update({
+  id: '/personal',
+  path: '/personal',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedPosRoute = AuthenticatedPosRouteImport.update({
   id: '/pos',
   path: '/pos',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/cierre': typeof AuthenticatedCierreRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/inventario': typeof AuthenticatedInventarioRoute
+  '/personal': typeof AuthenticatedPersonalRoute
   '/pos': typeof AuthenticatedPosRoute
 }
 export interface FileRoutesByTo {
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/cierre': typeof AuthenticatedCierreRoute
   '/compras': typeof AuthenticatedComprasRoute
   '/inventario': typeof AuthenticatedInventarioRoute
+  '/personal': typeof AuthenticatedPersonalRoute
   '/pos': typeof AuthenticatedPosRoute
 }
 export interface FileRoutesById {
@@ -76,13 +84,28 @@ export interface FileRoutesById {
   '/_authenticated/cierre': typeof AuthenticatedCierreRoute
   '/_authenticated/compras': typeof AuthenticatedComprasRoute
   '/_authenticated/inventario': typeof AuthenticatedInventarioRoute
+  '/_authenticated/personal': typeof AuthenticatedPersonalRoute
   '/_authenticated/pos': typeof AuthenticatedPosRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/cierre' | '/compras' | '/inventario' | '/pos'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/cierre'
+    | '/compras'
+    | '/inventario'
+    | '/personal'
+    | '/pos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/cierre' | '/compras' | '/inventario' | '/pos'
+  to:
+    | '/'
+    | '/auth'
+    | '/cierre'
+    | '/compras'
+    | '/inventario'
+    | '/personal'
+    | '/pos'
   id:
     | '__root__'
     | '/'
@@ -91,6 +114,7 @@ export interface FileRouteTypes {
     | '/_authenticated/cierre'
     | '/_authenticated/compras'
     | '/_authenticated/inventario'
+    | '/_authenticated/personal'
     | '/_authenticated/pos'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +168,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedInventarioRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/personal': {
+      id: '/_authenticated/personal'
+      path: '/personal'
+      fullPath: '/personal'
+      preLoaderRoute: typeof AuthenticatedPersonalRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pos': {
       id: '/_authenticated/pos'
       path: '/pos'
@@ -158,6 +189,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCierreRoute: typeof AuthenticatedCierreRoute
   AuthenticatedComprasRoute: typeof AuthenticatedComprasRoute
   AuthenticatedInventarioRoute: typeof AuthenticatedInventarioRoute
+  AuthenticatedPersonalRoute: typeof AuthenticatedPersonalRoute
   AuthenticatedPosRoute: typeof AuthenticatedPosRoute
 }
 
@@ -165,6 +197,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCierreRoute: AuthenticatedCierreRoute,
   AuthenticatedComprasRoute: AuthenticatedComprasRoute,
   AuthenticatedInventarioRoute: AuthenticatedInventarioRoute,
+  AuthenticatedPersonalRoute: AuthenticatedPersonalRoute,
   AuthenticatedPosRoute: AuthenticatedPosRoute,
 }
 
